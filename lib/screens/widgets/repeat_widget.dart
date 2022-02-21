@@ -9,13 +9,12 @@ class RepeatDays extends StatefulWidget {
 }
 
 class _RepeatDaysState extends State<RepeatDays> {
+  bool isVisible = false;
   void addDays() {
     setState(() {
       isVisible = !isVisible;
     });
   }
-
-  bool isVisible = false;
 
   @override
   Widget build(BuildContext context) {

@@ -31,9 +31,13 @@ class _AlarmPageState extends State<AlarmPage>
             itemBuilder: (context, i) {
               return AlarmWidget(
                 dueTime: manager.alarmList[i].dueTime!,
+                onDelete: () {
+                  manager.removeTime(i);
+                },
                 onTap: () async {
-                  manager.pickAlarm(
-                      context, i); //shows time picker and creates time
+                  TimeOfDay? time = await manager.pickAlarm(context, i);
+                  context.read<AlarmManager>().setAlarmTime(time, i);
+                  //shows time picker and creates time
                 },
                 switchVal: manager.alarmList[i].isActive,
                 onSwitchChanged: (switchVal) async {
@@ -46,9 +50,8 @@ class _AlarmPageState extends State<AlarmPage>
                         content: Text(text),
                         duration: const Duration(milliseconds: 2000));
                     ScaffoldMessenger.of(context).showSnackBar(snackInfo);
-                    NotificationTime? time =
-                        await manager.pickAlarm(context, i);
-                    createAlarmNotification(time);
+
+                    createAlarmNotification(manager.getTime);
                   }
                 },
               );

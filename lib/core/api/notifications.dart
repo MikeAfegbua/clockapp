@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
-Future<void> createAlarmNotification(
-    NotificationTime? notificationSchedule) async {
+Future<void> createAlarmNotification(TimeOfDay notificationSchedule) async {
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: createUniqueId(),
       channelKey: 'scheduled_channel',
       title: '${Emojis.time_alarm_clock} Clock',
       body:
-          'Alarm ${notificationSchedule!.timeOfDay.hourOfPeriod}:${notificationSchedule.timeOfDay.minute}',
+          'Alarm ${notificationSchedule.hourOfPeriod}:${notificationSchedule.minute}',
       notificationLayout: NotificationLayout.Default,
     ),
     actionButtons: [
@@ -23,9 +22,9 @@ Future<void> createAlarmNotification(
       ),
     ],
     schedule: NotificationCalendar(
-      weekday: 7,
-      hour: notificationSchedule.timeOfDay.hour,
-      minute: notificationSchedule.timeOfDay.minute,
+      weekday: 1,
+      hour: notificationSchedule.hour,
+      minute: notificationSchedule.minute,
       second: 0,
       millisecond: 0,
       repeats: true,

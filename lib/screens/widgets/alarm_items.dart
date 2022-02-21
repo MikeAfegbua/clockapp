@@ -1,3 +1,4 @@
+import 'package:clock_app/screens/widgets/small_button.dart';
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
 import 'repeat_widget.dart';
@@ -9,9 +10,11 @@ class AlarmWidget extends StatelessWidget {
     required this.onTap,
     required this.switchVal,
     required this.onSwitchChanged,
+    required this.onDelete,
   }) : super(key: key);
   final TimeOfDay dueTime;
   final Function() onTap;
+  final Function() onDelete;
   final bool switchVal;
   final void Function(bool) onSwitchChanged;
 
@@ -46,6 +49,57 @@ class AlarmWidget extends StatelessWidget {
       );
     }
 
+    buildExpandedDefault() {
+      return Row(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 12.0),
+            child: Icon(
+              Icons.add_alert_sharp,
+              color: Colors.white,
+            ),
+          ),
+          const Text(
+            '    Default (PianoDance)',
+            style: TextStyle(color: Colors.white),
+          ),
+          const SizedBox(
+            width: 75,
+          ),
+          SmallButton(
+            ontap: () {},
+            width: 20,
+            child: const Icon(
+              Icons.check,
+              color: Colors.black,
+              size: 20,
+            ),
+            innerColor: Colors.orange.shade400,
+          ),
+          const Text(
+            'Vibrate',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      );
+    }
+
+    buildExpandedLabel() {
+      return Row(children: const [
+        Padding(
+          padding: EdgeInsets.only(left: 12.0),
+          child: Icon(
+            Icons.arrow_forward_outlined,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          '    Label',
+          style: TextStyle(color: Colors.white),
+        ),
+      ]);
+    }
+
     buildExpanded() {
       return Container(
         color: Colors.teal,
@@ -55,6 +109,8 @@ class AlarmWidget extends StatelessWidget {
           children: [
             buildCollapsed(Colors.teal), //change color when expanded
             const RepeatDays(),
+            buildExpandedDefault(),
+            buildExpandedLabel()
           ],
         ),
       );
@@ -64,11 +120,15 @@ class AlarmWidget extends StatelessWidget {
       builder: (context) {
         var controller =
             ExpandableController.of(context, rebuildOnChange: true);
-        return Text(
-          controller!.expanded
-              ? "\u{1F5D1}  Delete" //pass textbutton delete here
-              : "Tomorrow",
-          style: const TextStyle(color: Colors.white),
+        return Padding(
+          padding: const EdgeInsets.only(right: 220),
+          child: TextButton(
+            onPressed: controller!.expanded ? onDelete : () {},
+            child: Text(
+              controller.expanded ? " \u{1F5D1}   Delete" : "Tomorrow",
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
         );
       },
     );
@@ -97,10 +157,7 @@ class AlarmWidget extends StatelessWidget {
                       tapBodyToCollapse: true,
                       tapBodyToExpand: true,
                       iconColor: Colors.white),
-                  header: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: deleteBuilder,
-                  ),
+                  header: deleteBuilder,
                   collapsed: Container(), //might create space under
                   expanded: Container(),
                 ),

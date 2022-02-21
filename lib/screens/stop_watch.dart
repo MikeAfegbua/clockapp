@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:clock_app/core/api/notifications.dart';
 
 class StopWatch extends StatelessWidget {
   const StopWatch({Key? key}) : super(key: key);

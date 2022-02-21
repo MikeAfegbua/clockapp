@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:clock_app/core/models/alarm_item_model.dart';
-import 'package:clock_app/core/api/notifications.dart';
 
 class AlarmManager extends ChangeNotifier {
   List<AlarmModel> alarmList = [
@@ -17,11 +16,6 @@ class AlarmManager extends ChangeNotifier {
     return alarmList.length;
   }
 
-  void setAlarmTime(TimeOfDay? timeOfAlarm, int i) {
-    alarmList[i].dueTime = timeOfAlarm;
-    notifyListeners();
-  }
-
   void addNewTime() {
     alarmList.add(
       AlarmModel(
@@ -35,13 +29,19 @@ class AlarmManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeTime(int i) {
+    alarmList.removeAt(i);
+
+    notifyListeners();
+  }
+
   void toggleSwitch(int i) {
     alarmList[i].isActive = !alarmList[i].isActive;
 
     notifyListeners();
   }
 
-  Future<NotificationTime?> pickAlarm(BuildContext context, int i) async {
+  Future<TimeOfDay?> pickAlarm(BuildContext context, int i) async {
     final TimeOfDay? timeOfAlarm = await showTimePicker(
       context: context,
       builder: (context, child) {
@@ -69,10 +69,24 @@ class AlarmManager extends ChangeNotifier {
     if (timeOfAlarm != null && timeOfAlarm != TimeOfDay.now()) {
       alarmList[i].dueTime = timeOfAlarm;
       notifyListeners();
-      return NotificationTime(timeOfDay: timeOfAlarm);
+      return timeOfAlarm;
       //manager = Provider.of<AlarmManager>(context, listen:false).
 
     }
     return null;
+  }
+
+  TimeOfDay actualTime = TimeOfDay.now();
+
+  TimeOfDay get getTime {
+    return actualTime;
+  }
+
+  void setAlarmTime(TimeOfDay? timeOfAlarm, int i) {
+    if (timeOfAlarm != null) {
+      actualTime = timeOfAlarm;
+    }
+
+    notifyListeners();
   }
 }
