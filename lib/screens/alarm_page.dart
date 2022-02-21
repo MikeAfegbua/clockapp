@@ -1,8 +1,9 @@
-import 'package:clock_app/core/view_models/alarm_manager.dart';
-import 'package:clock_app/screens/timer_page.dart';
+import 'package:clock_app/core/api/notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:clock_app/core/view_models/alarm_manager.dart';
 import 'package:provider/provider.dart';
 import 'widgets/alarm_items.dart';
+//import 'package:intl/intl.dart';
 
 class AlarmPage extends StatefulWidget {
   const AlarmPage({Key? key}) : super(key: key);
@@ -13,21 +14,12 @@ class AlarmPage extends StatefulWidget {
 
 class _AlarmPageState extends State<AlarmPage>
     with AutomaticKeepAliveClientMixin {
-  List<Widget> myList = [const AlarmItems()];
-
   @override
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
-    AlarmManager alarmManager =
-        Provider.of<AlarmManager>(context, listen: true);
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -35,38 +27,28 @@ class _AlarmPageState extends State<AlarmPage>
       body: Consumer<AlarmManager>(
         builder: (BuildContext context, manager, child) {
           return ListView.builder(
-            itemCount: alarmManager.alarmList.length,
+            itemCount: manager.alarmList.length,
             itemBuilder: (context, i) {
-              return AlarmTest(
-                dueTime: context.read<AlarmManager>().alarmList[i].dueTime!,
+              return AlarmWidget(
+                dueTime: manager.alarmList[i].dueTime!,
                 onTap: () async {
-                  final TimeOfDay? timeOfAlarm = await showTimePicker(
-                    context: context,
-                    builder: (context, child) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 100.0),
-                            child: SizedBox(
-                              height: 500,
-                              child: child,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                    initialTime: TimeOfDay.now(),
-                    initialEntryMode: TimePickerEntryMode.dial,
-                    helpText: '',
-                  );
+                  manager.pickAlarm(
+                      context, i); //shows time picker and creates time
+                },
+                switchVal: manager.alarmList[i].isActive,
+                onSwitchChanged: (switchVal) async {
+                  manager.toggleSwitch(i);
 
-                  if (timeOfAlarm != null && timeOfAlarm != TimeOfDay.now()) {
-                    context.read<AlarmManager>().setAlarmTime(
-                        timeOfAlarm, alarmManager.alarmList[i].dueTime);
-                    // ignore: avoid_print
-                    print(timeOfAlarm.format(context));
-                    // ignore: avoid_print
-                    print(AlarmManager().alarmList[i].dueTime!.format(context));
+                  if (switchVal == true) {
+                    var text =
+                        'Alarm set for ${manager.alarmList[i].dueTime!.format(context)}';
+                    var snackInfo = SnackBar(
+                        content: Text(text),
+                        duration: const Duration(milliseconds: 2000));
+                    ScaffoldMessenger.of(context).showSnackBar(snackInfo);
+                    NotificationTime? time =
+                        await manager.pickAlarm(context, i);
+                    createAlarmNotification(time);
                   }
                 },
               );
@@ -79,8 +61,7 @@ class _AlarmPageState extends State<AlarmPage>
         child: FloatingActionButton(
           backgroundColor: Colors.orange.shade400,
           onPressed: () {
-            myList.add(const AlarmItems());
-            setState(() {});
+            context.read<AlarmManager>().addNewTime();
           },
           tooltip: 'Increment',
           child: const Icon(Icons.add),

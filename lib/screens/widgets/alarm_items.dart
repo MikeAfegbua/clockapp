@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
+import 'repeat_widget.dart';
 
-class AlarmItems extends StatefulWidget {
-  const AlarmItems({Key? key}) : super(key: key);
-
-  @override
-  State<AlarmItems> createState() => _AlarmItemsState();
-}
-
-class _AlarmItemsState extends State<AlarmItems> {
-  TimeOfDay selectedTime = TimeOfDay.now();
-  var controller = ExpandableController();
-  bool va = false;
+class AlarmWidget extends StatelessWidget {
+  const AlarmWidget({
+    Key? key,
+    required this.dueTime,
+    required this.onTap,
+    required this.switchVal,
+    required this.onSwitchChanged,
+  }) : super(key: key);
+  final TimeOfDay dueTime;
+  final Function() onTap;
+  final bool switchVal;
+  final void Function(bool) onSwitchChanged;
 
   @override
   Widget build(BuildContext context) {
-    buildCollapsed1(Color col) {
+    buildCollapsed(Color col) {
       return Container(
         height: 70,
         color: col,
@@ -24,73 +26,35 @@ class _AlarmItemsState extends State<AlarmItems> {
           children: [
             TextButton(
               child: Text(
-                "${selectedTime.hourOfPeriod}:${selectedTime.minute}",
+                dueTime.format(context), //time renders here
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 50,
                   fontWeight: FontWeight.w100,
                 ),
               ),
-              onPressed: () async {
-                final TimeOfDay? timeOfDay = await showTimePicker(
-                  context: context,
-                  builder: (context, child) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 100.0),
-                          child: SizedBox(
-                            height: 500,
-                            child: child,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  initialTime: selectedTime,
-                  initialEntryMode: TimePickerEntryMode.dial,
-                  helpText: '',
-                );
-                if (timeOfDay != null && timeOfDay != selectedTime) {
-                  setState(() {
-                    selectedTime = timeOfDay;
-                  });
-                }
-              },
+              onPressed: onTap,
             ),
             Switch(
-                value: va,
-                activeTrackColor: Colors.yellow.shade200,
-                activeColor: Colors.orange.shade400,
-                onChanged: (val) {
-                  va = val;
-                  setState(() {});
-                }),
+              value: switchVal,
+              activeTrackColor: Colors.yellow.shade200,
+              activeColor: Colors.orange.shade400,
+              onChanged: onSwitchChanged,
+            ),
           ],
         ),
       );
     }
 
-    buildExpanded1() {
+    buildExpanded() {
       return Container(
         color: Colors.teal,
         height: 250,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            buildCollapsed1(Colors.teal), //change color when expanded
-            const ListTile(
-              leading: Icon(Icons.ac_unit),
-              trailing: Text('Repeat'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.ac_unit),
-              trailing: Text('Repeat'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.ac_unit),
-              trailing: Text('Repeat'),
-            ),
+            buildCollapsed(Colors.teal), //change color when expanded
+            const RepeatDays(),
           ],
         ),
       );
@@ -123,10 +87,10 @@ class _AlarmItemsState extends State<AlarmItems> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expandable(
-                  collapsed: buildCollapsed1(controller.expanded
+                  collapsed: buildCollapsed(controller.expanded
                       ? Colors.teal
                       : const Color(0xFF34857b)), //works
-                  expanded: buildExpanded1(),
+                  expanded: buildExpanded(),
                 ),
                 ExpandablePanel(
                   theme: const ExpandableThemeData(
@@ -136,10 +100,6 @@ class _AlarmItemsState extends State<AlarmItems> {
                   header: Padding(
                     padding: const EdgeInsets.all(10),
                     child: deleteBuilder,
-                    // Text(
-                    //   "$w",
-                    //   style: const TextStyle(color: Colors.white),
-                    // ),
                   ),
                   collapsed: Container(), //might create space under
                   expanded: Container(),
