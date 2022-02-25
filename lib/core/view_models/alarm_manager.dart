@@ -16,11 +16,34 @@ class AlarmManager extends ChangeNotifier {
     return alarmList.length;
   }
 
-  void addNewTime() {
+  void addNewTime(BuildContext context) async {
+    final TimeOfDay? timeOfAlarm = await showTimePicker(
+      context: context,
+      builder: (context, child) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 100.0),
+              child: SizedBox(
+                height: 500,
+                child: child,
+              ),
+            ),
+          ],
+        );
+      },
+      initialTime: TimeOfDay.fromDateTime(
+        DateTime.now().add(
+          const Duration(minutes: 1),
+        ),
+      ),
+      initialEntryMode: TimePickerEntryMode.dial,
+      helpText: '',
+    );
     alarmList.add(
       AlarmModel(
           isActive: false,
-          dueTime: TimeOfDay.now(),
+          dueTime: timeOfAlarm,
           labelText: '',
           repeatDays: DateTime.now(),
           repeatText: 'Monday',

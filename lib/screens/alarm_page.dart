@@ -64,7 +64,7 @@ class _AlarmPageState extends State<AlarmPage>
         child: FloatingActionButton(
           backgroundColor: Colors.orange.shade400,
           onPressed: () {
-            context.read<AlarmManager>().addNewTime();
+            context.read<AlarmManager>().addNewTime(context);
           },
           tooltip: 'Increment',
           child: const Icon(Icons.add),
