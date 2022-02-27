@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clock_app/core/api/city_time_api.dart';
 
 class CityTimes extends StatefulWidget {
   const CityTimes({Key? key}) : super(key: key);
@@ -11,6 +12,22 @@ class _CityTimesState extends State<CityTimes>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  TestApi test = TestApi();
+  late String akure;
+  @override
+  void initState() {
+    var a = get();
+    // ignore: avoid_print
+    print(a);
+
+    super.initState();
+  }
+
+  dynamic get() async {
+    var weatherData = await test.getCityWeather("London");
+    return weatherData;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -21,7 +38,7 @@ class _CityTimesState extends State<CityTimes>
           const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              '11:00 AM',
+              '',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 60,
