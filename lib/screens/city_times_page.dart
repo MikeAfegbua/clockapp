@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:clock_app/core/api/city_time_api.dart';
 
@@ -13,19 +15,17 @@ class _CityTimesState extends State<CityTimes>
   @override
   bool get wantKeepAlive => true;
   TestApi test = TestApi();
-  late String akure;
+
   @override
   void initState() {
-    var a = get();
-    // ignore: avoid_print
-    print(a);
-
     super.initState();
+
+    getData();
   }
 
-  dynamic get() async {
-    var weatherData = await test.getCityWeather("London");
-    return weatherData;
+  void getData() async {
+    var a = await test.getCityData();
+    print(a);
   }
 
   @override
