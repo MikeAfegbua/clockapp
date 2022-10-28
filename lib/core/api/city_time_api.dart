@@ -27,4 +27,6 @@ class TestApi {
     var weatherData = await networkHelper.getData();
     return weatherData;
   }
+
+  void getInfo() {}
 }
